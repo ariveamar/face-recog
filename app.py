@@ -1,8 +1,15 @@
 import json
+import urllib.parse
 from flask import Flask, render_template, Response, jsonify
 from pymongo import MongoClient
 app = Flask(__name__)
-client = MongoClient('3349393a5d2a74a16e3a333d17b7e4ece371af465a3c969edff36393be5bac6e', 27017)
+host = "localhost"
+port = 27017
+db_name = "devdb_dpo"
+user_name = "devdb"
+pass_word = "devdb123" 
+client = MongoClient(f'mongodb://{user_name}:{urllib.parse.quote_plus(pass_word)}@{host}:{port}/{db_name}')
+
 db = client.devdb_dpo
 dpos = db.dpos
 
