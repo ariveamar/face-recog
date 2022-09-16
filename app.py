@@ -8,8 +8,8 @@ port = 27017
 db_name = "devdb_dpo"
 user_name = "devdb"
 pass_word = "devdb123" 
-client = MongoClient(f'mongodb://{user_name}:{urllib.parse.quote_plus(pass_word)}@{host}:{port}/{db_name}')
-
+# client = MongoClient(f'mongodb://{user_name}:{urllib.parse.quote_plus(pass_word)}@{host}:{port}/{db_name}')
+client = MongoClient('localhost',27015)
 db = client.devdb_dpo
 dpos = db.dpos
 
