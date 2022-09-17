@@ -1,9 +1,6 @@
 version: '3.1'
 services:
   kriminalitas:
-    image: kriminalitas-face-app:latest
-  ports:
-    5001:5001
-networks:
-  ops_network:
-    external: true
+    image: kriminalitas-faces:latest
+    ports:
+      - 5001:5001
