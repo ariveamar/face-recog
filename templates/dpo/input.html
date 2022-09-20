@@ -1,0 +1,97 @@
+<style>
+  .bd-example-modal-lg .modal-dialog {
+    display: table;
+    position: relative;
+    margin: 0 auto;
+    top: calc(50% - 24px);
+  }
+
+  .bd-example-modal-lg .modal-dialog .modal-content {
+    background-color: transparent;
+    border: none;
+  }
+</style>
+<body>
+  {%include "navpage.html"%}
+  <div class="container">
+    <form>
+      <div class="mb-3">
+        <label for="name" class="form-label">Nama</label>
+        <input type="text" class="form-control" id="name" />
+      </div>
+      <div class="mb-3">
+        <label for="alamat" class="form-label">Alamat</label>
+        <textarea type="address" class="form-control" id="alamat"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="photo" class="form-label">Foto</label>
+        <input type="file" class="form-control" id="photo" accept="image/*" />
+      </div>
+      <button type="button" class="btn btn-primary" onclick="modal()">Submit</button>
+    </form>
+  </div>
+  <div
+    class="modal fade bd-example-modal-lg"
+    data-backdrop="static"
+    data-keyboard="false"
+    tabindex="-1"
+  >
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content" style="width: 48px">
+        <span class="fa fa-spinner fa-spin fa-3x"></span>
+      </div>
+    </div>
+  </div>
+</body>
+{%include "loadjs.html"%}
+<script>
+  function modal() {
+    $(".modal").modal("show");
+    setTimeout(function () {
+      console.log("hejsan");
+      $(".modal").modal("hide");
+    }, 3000);
+  }
+  var dpo = {
+    alamat: "string",
+    ciriCiri: "string",
+    createdAt: "2022-09-20T07:31:09.595Z",
+    createdBy: "string",
+    detailPekerjaan: "string",
+    endPublish: "2022-09-20T07:31:09.595Z",
+    fileDokumenPendukung: "string",
+    id: "string",
+    kabupaten: "string",
+    kecamatan: "string",
+    kelurahan: "string",
+    keterangan: "string",
+    kodeJenisIdentitas: 0,
+    kodeJenisKelamin: 0,
+    kodePekerjaan: 0,
+    name: "string",
+    noHpDihubungi: "string",
+    nomorDokumenPendukung: "string",
+    nomorIdentitas: "string",
+    photo: "string",
+    provinsi: "string",
+    publish: "string",
+    publishedAt: "2022-09-20T07:31:09.595Z",
+    publishedBy: "string",
+    satwilCode: "string",
+    startPublish: "2022-09-20T07:31:09.595Z",
+    statusDpo: "string",
+    sumberDpo: "string",
+    tempatLahir: "string",
+    tglDokumenPendukung: "2022-09-20T07:31:09.595Z",
+    tglLahir: "2022-09-20T07:31:09.595Z",
+    tindakanPidana: "string",
+    unpublishedAt: "2022-09-20T07:31:09.595Z",
+    unpublishedBy: "string",
+    updatedAt: "2022-09-20T07:31:09.595Z",
+    updatedBy: "string",
+    uuDilanggar: "string",
+  };
+  function submit() {
+    console.log("tes");
+  }
+</script>

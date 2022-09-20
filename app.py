@@ -1,21 +1,10 @@
+import sys
 from flask import Flask, render_template, request, redirect
-from pymongo import MongoClient
-import os
-from dotenv import load_dotenv
 from repository.repository import Repository
+from connection import dpos, doh, hiltem
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
-load_dotenv()
-client = MongoClient(os.getenv("IP_ADDR_SERVER_MONGO"), int(os.getenv("PORT_SERVER_MONGO")))
 
-devdb_dpo = client.devdb_dpo
-dpos = devdb_dpo.dpos
-
-devdb_doh = client.devdb_doh
-doh = devdb_doh.doh
-
-devdb_hiltem = client.devdb_hiltem
-hiltem = devdb_hiltem.hiltem
 
 repo = Repository
 nav = [
@@ -28,16 +17,28 @@ nav = [
         "route":"/identify_faces",
         "name":"Identifikasi Wajah",
         "isActive":False
+    },
+    {
+        "route":"/input_dpo",
+        "name":"Input DPO",
+        "isActive":False
     }
 ]
+@app.route("/input_dpo")
+def input_dpo():
+    modify_nav("Input DPO")
+    return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO")
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 @app.route("/")
 def index():
+    dataKriminalitas = {}
     modify_nav("Data Kriminalitas")
-    allResult = dpos.find()
-    return render_template("layout.html",result=allResult, nav=nav, body="index.html", title="Data Kriminalitas")
+    dataKriminalitas["dpo"] = dpos
+    dataKriminalitas["doh"] = doh
+    dataKriminalitas["hiltem"] = hiltem
+    return render_template("layout.html", dataKriminal=dataKriminalitas, nav=nav, body="index.html", title="Data Kriminalitas")
 @app.route("/identify_faces", methods=['GET', 'POST'])
 def identify_faces():
     if request.method == 'POST':
@@ -51,10 +52,7 @@ def identify_faces():
 
         if file and allowed_file(file.filename):
             # The image file seems valid! Detect faces and return the result.
-
-            return {
-                    "name":repo.face_identify(repo, file)
-                }
+            return {"result":repo.face_identify(repo, file)} 
     modify_nav("Identifikasi Wajah")
     return render_template("layout.html", nav=nav, body="identify_faces.html", title="Identifikasi Wajah")
 

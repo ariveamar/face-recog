@@ -2,6 +2,9 @@ import face_recognition
 import pickle
 import numpy as np
 import math
+from connection import dpos, doh, hiltem
+import base64
+from bson.objectid import ObjectId
 class Repository:
     all_face_encodings = {}
     def __init__(self):
@@ -11,9 +14,16 @@ class Repository:
         self.all_face_encodings = pickle.load(f)
         f.close
         return self
-    def savePickle(self, path):
-        f = open(path, 'wb')
-        pickle.dump({}, f)
+    def savePickle(self):
+        dpo = dpos.find()
+        allPersonDPO = {}
+        for item in dpo:
+            fh = open(str(item["_id"])+".png", "wb")
+            fh.write(base64.b64decode(item["photo"]))
+            foto = face_recognition.load_image_file(str(item["_id"])+".png")
+            allPersonDPO[str(item["_id"])] = face_recognition.face_encodings(foto)[0]
+        f = open('dataset_faces.dat', 'wb')
+        pickle.dump(allPersonDPO, f)
         f.close
         return self
     def face_distance_to_conf(face_distance, face_match_threshold=0.6):
@@ -26,6 +36,7 @@ class Repository:
             linear_val = 1.0 - (face_distance / (range * 2.0))
             return linear_val + ((1.0 - linear_val) * math.pow((linear_val - 0.5) * 2, 0.2))
     def face_identify(self, file_image):
+        self.savePickle(self)
         self.loadPickle(self, 'dataset_faces.dat')
         face_names = list(self.all_face_encodings.keys())
         face_encodings = np.array(list(self.all_face_encodings.values()))
@@ -35,7 +46,10 @@ class Repository:
             face_distances = face_recognition.face_distance(face, unknown_face)
             percentage = self.face_distance_to_conf(face_distance=face_distances)
             if percentage > 0.9:
-                return face_names[i]
-        return "Unknow Faces"
+                res = dpos.find_one({"_id":ObjectId(face_names[i])})
+                del res['_id']
+                del res['_class']
+                return res
+        return {"messages":"Unknow Faces"}
         
     

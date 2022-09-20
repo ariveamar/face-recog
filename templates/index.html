@@ -1,16 +1,19 @@
 <body>
   {%include "navpage.html"%}
   <div class="container">
-    <div class="row">
-      {% for res in result %}
-      <div class="col">
-        <div class="card m-2 p-2 text-center">
+    <!-- DPO -->
+    <h2>DPO</h2>
+    <div class="owl-carousel owl-theme">
+      {% if dataKriminal["dpo"].count_documents({}) > 0 %} {% for res in
+      dataKriminal["dpo"].find() %}
+      <div class="item">
+        <div class="card text-center">
           <img
             src="data:image/jpeg;base64,{{ res['photo'] }}"
             class="card-img-top"
             alt="..."
-            width="320"
-            height="480"
+            width="480"
+            height="320"
           />
           <div class="card-body">
             <h5 class="card-title">{{ res['name'] }}</h5>
@@ -18,7 +21,80 @@
           </div>
         </div>
       </div>
-      {% endfor %}
+      {% endfor %} {% else %}
+      <p>Data Tidak ada</p>
+      {% endif %}
+    </div>
+    <!-- DOH -->
+    <h2>DOH</h2>
+    <div class="owl-carousel owl-theme">
+      {% if dataKriminal["doh"].count_documents({}) > 0 %} {% for res in
+      dataKriminal["doh"].find() %}
+      <div class="item">
+        <div class="card text-center">
+          <img
+            src="data:@file/png;base64,{{ res['photo'] }}"
+            class="card-img-top"
+            alt="..."
+            width="480"
+            height="320"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ res['name'] }}</h5>
+            <p><i>({{ res['provinsi']}})</i></p>
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p>Data Tidak ada</p>
+      {% endif %}
+    </div>
+    <!-- Hiltem -->
+    <h2>Hiltem</h2>
+    <div class="owl-carousel owl-theme">
+      {% if dataKriminal["hiltem"].count_documents({}) > 0 %} {% for res in
+      dataKriminal["hiltem"].find() %}
+      <div class="item">
+        <div class="card text-center">
+          <img
+            src="data:image/jpeg;base64,{{ res['photo'] }}"
+            class="card-img-top"
+            alt="..."
+            width="480"
+            height="320"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ res['name'] }}</h5>
+            <p><i>({{ res['provinsi']}})</i></p>
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p>Data Tidak ada</p>
+      {% endif %}
     </div>
   </div>
 </body>
+{%include "loadjs.html"%}
+<script>
+  $(".owl-carousel").owlCarousel({
+    loop: true,
+    margin: 10,
+    responsiveClass: true,
+    responsive: {
+      0: {
+        items: 1,
+        nav: true,
+      },
+      600: {
+        items: 3,
+        nav: false,
+      },
+      1000: {
+        items: 5,
+        nav: true,
+        loop: false,
+      },
+    },
+  });
+</script>
