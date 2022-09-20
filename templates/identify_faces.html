@@ -12,8 +12,15 @@
       <h3>Upload a picture and see if it's a picture of Wanted Person</h3>
       <form method="POST" enctype="multipart/form-data">
         <input type="file" name="file" />
-        <input type="submit" value="Upload" />
+        <input type="submit" value="Upload" onclick="modal()"/>
       </form>
     </div>
+    {%include "loading.html"%}
   </body>
 </html>
+{%include "loadjs.html"%}
+<script>
+  function modal() {
+    $(".modal").modal("show");
+  }
+</script>
