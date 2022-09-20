@@ -18,9 +18,10 @@ class Repository:
         dpo = dpos.find()
         allPersonDPO = {}
         for item in dpo:
-            fh = open(str(item["_id"])+".png", "wb")
+            image_path = "image/"+str(item["_id"])+".png"
+            fh = open(image_path, "wb")
             fh.write(base64.b64decode(item["photo"]))
-            foto = face_recognition.load_image_file(str(item["_id"])+".png")
+            foto = face_recognition.load_image_file(image_path)
             allPersonDPO[str(item["_id"])] = face_recognition.face_encodings(foto)[0]
         f = open('dataset_faces.dat', 'wb')
         pickle.dump(allPersonDPO, f)
