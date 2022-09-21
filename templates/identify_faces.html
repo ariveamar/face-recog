@@ -11,8 +11,8 @@
     <div class="container">
       <h3>Upload a picture and see if it's a picture of Wanted Person</h3>
       <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" />
-        <input type="submit" value="Upload" onclick="modal()"/>
+        <input class="form-control" accept="image/png, image/jpeg" type="file" name="file" />
+        <input class="btn btn-primary mt-2" type="submit" value="Upload" onclick="modal()"/>
       </form>
     </div>
     {%include "loading.html"%}

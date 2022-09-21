@@ -1,7 +1,7 @@
 <body>
   {%include "navpage.html"%}
   <div class="container">
-    <form>
+    <form id="formInput">
       <div class="mb-3">
         <label for="name" class="form-label">Nama</label>
         <input type="text" class="form-control" id="name" />
@@ -12,9 +12,16 @@
       </div>
       <div class="mb-3">
         <label for="photo" class="form-label">Foto</label>
-        <input type="file" class="form-control" id="photo" accept="image/*" />
+        <input
+          type="file"
+          class="form-control"
+          id="photo"
+          accept="image/png, image/jpeg"
+        />
       </div>
-      <button type="button" class="btn btn-primary" onclick="modal()">Submit</button>
+      <button type="button" class="btn btn-primary" onclick="modal()">
+        Submit
+      </button>
     </form>
   </div>
   {%include "loading.html"%}
@@ -22,52 +29,47 @@
 {%include "loadjs.html"%}
 <script>
   function modal() {
-    $(".modal").modal("show");
-    setTimeout(function () {
-      console.log("hejsan");
-      $(".modal").modal("hide");
-    }, 3000);
+    $("#modalLoading").modal("toggle");
+    var url = "http://192.168.100.137:8880/dpo/dpos";
+    var data = {
+      name: $("#name").val(),
+      alamat: $("#alamat").val(),
+      photo: base64Image,
+      mimeType: document.getElementById("photo").files[0].type,
+    };
+    $.ajax({
+      url: url,
+      data: JSON.stringify(data),
+      type: "POST",
+      crossDomain: true,
+      contentType: "application/json; charset=utf-8",
+      success: function (data) {
+        $.post("http://192.168.100.137:5001/updatePickle", function (data) {
+          $("#modalLoading").modal("toggle");
+        });
+      },
+      error: function (jqXHR, status, error) {
+        console.log(error);
+        $("#modalLoading").modal("toggle");
+      },
+    });
   }
-  var dpo = {
-    alamat: "string",
-    ciriCiri: "string",
-    createdAt: "2022-09-20T07:31:09.595Z",
-    createdBy: "string",
-    detailPekerjaan: "string",
-    endPublish: "2022-09-20T07:31:09.595Z",
-    fileDokumenPendukung: "string",
-    id: "string",
-    kabupaten: "string",
-    kecamatan: "string",
-    kelurahan: "string",
-    keterangan: "string",
-    kodeJenisIdentitas: 0,
-    kodeJenisKelamin: 0,
-    kodePekerjaan: 0,
-    name: "string",
-    noHpDihubungi: "string",
-    nomorDokumenPendukung: "string",
-    nomorIdentitas: "string",
-    photo: "string",
-    provinsi: "string",
-    publish: "string",
-    publishedAt: "2022-09-20T07:31:09.595Z",
-    publishedBy: "string",
-    satwilCode: "string",
-    startPublish: "2022-09-20T07:31:09.595Z",
-    statusDpo: "string",
-    sumberDpo: "string",
-    tempatLahir: "string",
-    tglDokumenPendukung: "2022-09-20T07:31:09.595Z",
-    tglLahir: "2022-09-20T07:31:09.595Z",
-    tindakanPidana: "string",
-    unpublishedAt: "2022-09-20T07:31:09.595Z",
-    unpublishedBy: "string",
-    updatedAt: "2022-09-20T07:31:09.595Z",
-    updatedBy: "string",
-    uuDilanggar: "string",
-  };
-  function submit() {
-    console.log("tes");
+  var base64Image;
+  $("#photo").on("change", function () {
+    $("#modalLoading").modal("toggle");
+    getBase64(this.files[0]);
+    setTimeout(function () {
+      $("#modalLoading").modal("toggle");
+    }, 1000);
+  });
+  function getBase64(file) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      base64Image = reader.result.replace("data:", "").replace(/^.+,/, "");
+    };
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
   }
 </script>

@@ -9,7 +9,7 @@
       <div class="item">
         <div class="card text-center">
           <img
-            src="data:image/jpeg;base64,{{ res['photo'] }}"
+            src="data:{{ res['mimeType'] }};base64,{{ res['photo'] }}"
             class="card-img-top"
             alt="..."
             width="480"
@@ -17,7 +17,7 @@
           />
           <div class="card-body">
             <h5 class="card-title">{{ res['name'] }}</h5>
-            <p><i>({{ res['provinsi']}})</i></p>
+            <p><i>({{ res['alamat']}})</i></p>
           </div>
         </div>
       </div>

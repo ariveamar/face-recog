@@ -1,5 +1,5 @@
 import sys
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, Response
 from repository.repository import Repository
 from connection import dpos, doh, hiltem
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -24,6 +24,14 @@ nav = [
         "isActive":False
     }
 ]
+
+@app.route("/updatePickle", methods=['POST'])
+def updatePickle():
+    if request.method == 'POST':
+        repo.savePickle(repo)
+        return {"messages":"Berhasil update Pickle"}
+    else:
+        return {"messages":"Gagal update Pickle"}
 @app.route("/input_dpo")
 def input_dpo():
     modify_nav("Input DPO")
