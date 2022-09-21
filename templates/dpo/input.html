@@ -46,6 +46,13 @@
       success: function (data) {
         $.post("http://192.168.100.137:5001/updatePickle", function (data) {
           $("#modalLoading").modal("toggle");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Data DPO Berhasil Disimpan",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         });
       },
       error: function (jqXHR, status, error) {
@@ -57,10 +64,15 @@
   var base64Image;
   $("#photo").on("change", function () {
     $("#modalLoading").modal("toggle");
-    getBase64(this.files[0]);
+    new Compressor(this.files[0], {
+      quality:0.4,
+      success(result){
+        getBase64(result);
+      }
+    })
     setTimeout(function () {
       $("#modalLoading").modal("toggle");
-    }, 1000);
+    }, 3000);
   });
   function getBase64(file) {
     var reader = new FileReader();

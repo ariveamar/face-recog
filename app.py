@@ -1,10 +1,10 @@
-import sys
+from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, Response
 from repository.repository import Repository
 from connection import dpos, doh, hiltem
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
-
+CORS(app)
 
 repo = Repository
 nav = [

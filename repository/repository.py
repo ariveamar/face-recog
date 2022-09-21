@@ -5,6 +5,8 @@ import math
 from connection import dpos, doh, hiltem
 import base64
 from bson.objectid import ObjectId
+import sys
+import urllib.request as ur
 class Repository:
     all_face_encodings = {}
     def __init__(self):
@@ -18,16 +20,15 @@ class Repository:
         dpo = dpos.find()
         allPersonDPO = {}
         for item in dpo:
-            image_path = "image/"+str(item["_id"])+"."+str(item["mimeType"]).split("/")[1]
-            fh = open(image_path, "wb")
-            fh.write(base64.b64decode(item["photo"]))
-            foto = face_recognition.load_image_file(image_path)
+            image = "data:"+item['mimeType']+";base64,"+item['photo']
+            decoded= ur.urlopen(image)
+            foto = face_recognition.load_image_file(decoded)
             allPersonDPO[str(item["_id"])] = face_recognition.face_encodings(foto)[0]
         f = open('dataset_faces.dat', 'wb')
         pickle.dump(allPersonDPO, f)
         f.close
         return self
-    def face_distance_to_conf(face_distance, face_match_threshold=0.6):
+    def face_distance_to_conf(face_distance, face_match_threshold=0.8):
         if face_distance > face_match_threshold:
             range = (1.0 - face_match_threshold)
             linear_val = (1.0 - face_distance) / (range * 2.0)
@@ -43,7 +44,7 @@ class Repository:
         unknown_image = face_recognition.load_image_file(file_image)
         unknown_face = face_recognition.face_encodings(unknown_image)
         for i, face in enumerate(face_encodings, start=0):
-            face_distances = face_recognition.face_distance(unknown_face, face)
+            face_distances = face_recognition.face_distance(face, unknown_face)
             percentage = self.face_distance_to_conf(face_distance=face_distances)
             if percentage > 0.9:
                 res = dpos.find_one({"_id":ObjectId(face_names[i])})
