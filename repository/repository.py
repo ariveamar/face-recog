@@ -42,16 +42,16 @@ class Repository:
         face_names = list(self.all_face_encodings.keys())
         face_encodings = np.array(list(self.all_face_encodings.values()))
         unknown_image = face_recognition.load_image_file(file_image)
-        unknown_face = face_recognition.face_encodings(unknown_image)
-        for i, face in enumerate(face_encodings, start=0):
-            face_distances = face_recognition.face_distance(face, unknown_face)
-            percentage = self.face_distance_to_conf(face_distance=face_distances)
+        unknown_face = face_recognition.face_encodings(unknown_image)[0]
+        face_distances = face_recognition.face_distance(face_encodings, unknown_face)
+        listFace = []
+        for i, face_distance in enumerate(face_distances, start=0):
+            percentage = self.face_distance_to_conf(face_distance=face_distance)
             if percentage > 0.9:
                 res = dpos.find_one({"_id":ObjectId(face_names[i])})
-                del res['_id']
-                del res['_class']
-                del res['photo']
-                return res
-        return {"messages":"Unknow Faces"}
+                del res["_id"]
+                res["kemiripan"] = "{:.2f}".format((percentage* 100.0))+"%" 
+                listFace.append(res)
+        return listFace
         
     

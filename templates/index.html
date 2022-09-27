@@ -97,4 +97,8 @@
       },
     },
   });
+  $(document).on("click", ".owl-item", function () {
+    owlIndex = $(this).index();
+    console.log(owlIndex);
+  });
 </script>

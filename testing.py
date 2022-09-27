@@ -3,7 +3,7 @@ from PIL import Image, ImageShow
 import face_recognition
 from connection import dpos, doh, hiltem
 from bson.objectid import ObjectId
-person = dpos.find_one({"_id":ObjectId("632ad2a035c8a413ac069b3a")})
+person = dpos.find_one({"_id":ObjectId("632bd86bb69fba2a741ddc4f")})
 image = "data:"+person['mimeType']+";base64,"+person['photo']
 decoded= ur.urlopen(image)
 image_loaded = face_recognition.load_image_file(decoded)

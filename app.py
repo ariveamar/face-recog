@@ -2,8 +2,13 @@ from flask_cors import CORS
 from flask import Flask, render_template, request, redirect, Response
 from repository.repository import Repository
 from connection import dpos, doh, hiltem
+from werkzeug.utils import secure_filename
+import os
+import sys
+UPLOAD_FOLDER = 'image'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 CORS(app)
 
 repo = Repository
@@ -47,11 +52,16 @@ def index():
     dataKriminalitas["doh"] = doh
     dataKriminalitas["hiltem"] = hiltem
     return render_template("layout.html", dataKriminal=dataKriminalitas, nav=nav, body="index.html", title="Data Kriminalitas")
-@app.route("/identify_faces", methods=['GET', 'POST'])
+@app.route("/identify_faces", methods=['GET'])
 def identify_faces():
+    modify_nav("Identifikasi Wajah")
+    return render_template("layout.html", nav=nav, body="identify_faces.html", title="Identifikasi Wajah")
+
+@app.route("/identify", methods=['POST'])
+def identify():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return redirect(request.url)
+            return {"result":"file not found"} 
 
         file = request.files['file']
 
@@ -59,10 +69,12 @@ def identify_faces():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
             # The image file seems valid! Detect faces and return the result.
-            return {"result":repo.face_identify(repo, file)} 
-    modify_nav("Identifikasi Wajah")
-    return render_template("layout.html", nav=nav, body="identify_faces.html", title="Identifikasi Wajah")
+            return {"result":repo.face_identify(repo, path)} 
+    return {"messages":"Method Not Allowed"}
 
 def modify_nav(path):
     for i, item in enumerate(nav, start=0):

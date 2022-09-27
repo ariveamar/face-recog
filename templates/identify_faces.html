@@ -10,7 +10,7 @@
     {%include "navpage.html"%}
     <div class="container">
       <h3>Upload a picture and see if it's a picture of Wanted Person</h3>
-      <form method="POST" enctype="multipart/form-data">
+      <form id="formAction" method="POST" enctype="multipart/form-data">
         <input
           class="form-control"
           accept="image/png, image/jpeg"
@@ -20,10 +20,16 @@
         />
         <input
           class="btn btn-primary mt-2"
-          type="submit"
+          type="button"
           value="Upload"
           onclick="modal()"
         />
+        <!-- <input
+          class="btn btn-primary mt-2"
+          type="button"
+          value="Get Data"
+          onclick="getData()"
+        /> -->
       </form>
     </div>
     {%include "loading.html"%}
@@ -31,8 +37,42 @@
 </html>
 {%include "loadjs.html"%}
 <script>
+  // function getData() {
+  //   $.ajax({
+  //     url:"https://api.robinops.bareskrim.polri.go.id/api/DashboardETL?Code=REKAPLP01c&Parameter[0].Key=SatkerLevel&Parameter[0].Value=2&Parameter[1].Key=SatkerId&Parameter[1].Value=1&Parameter[2].Key=Pilihan&Parameter[2].Value=1&Parameter[3].Key=FromDate&Parameter[3].Value=2022-08-01&Parameter[4].Key=ToDate&Parameter[4].Value=2022-08-04&Parameter[5].Key=JenisKejahatan&Parameter[5].Value=-1",
+  //     headers: {
+  //       "Accept": "application/json",
+  //       "Authorization": "Basic eUJGUlRiaDovWGo2VTZDOmRHOXNiMjVuSTNsaEkybHVhU05oWkdGc1lXZ2piV2xzYVdzamNHOXNjbWtqYW1GdVoyRnVJMlJwSTJGaWRYTmw=",
+  //     },
+  //     success: function (data) {
+  //       console.log(data);
+  //     },
+  //     error: function (jqxhr, status, erorr) {
+  //       console.log(error);
+  //     },
+  //   });
+  // }
   function modal() {
+    var formData = new FormData($("#formAction")[0]);
     $(".modal").modal("show");
+    $.ajax({
+      url: "/identify",
+      data: formData,
+      contentType: false,
+      cache: false,
+      processData: false,
+      method: "POST",
+      success: function (data) {
+        console.log(data);
+        $("#formAction").trigger("reset");
+        $(".modal").modal("hide");
+      },
+      error: function (jqxhr, status, erorr) {
+        console.log(error);
+        $("#formAction").trigger("reset");
+        $(".modal").modal("hide");
+      },
+    });
   }
   $("#photo").on("change", function () {
     $(".modal").modal("show");
