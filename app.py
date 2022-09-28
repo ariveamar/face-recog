@@ -1,10 +1,19 @@
-import sys
-from flask import Flask, render_template, request, redirect, Response
+from flask_cors import CORS
+from flask import Flask, render_template, request, redirect
 from repository.repository import Repository
 from connection import dpos, doh, hiltem
+from werkzeug.utils import secure_filename
+import requests
+import json
+import os
+import sys
+from dotenv import load_dotenv
+load_dotenv()
+UPLOAD_FOLDER = 'image'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+CORS(app)
 
 repo = Repository
 nav = [
@@ -34,8 +43,13 @@ def updatePickle():
         return {"messages":"Gagal update Pickle"}
 @app.route("/input_dpo")
 def input_dpo():
+    modelAttribute = {}
     modify_nav("Input DPO")
-    return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO")
+    masterDataJenisIdentitasReq = requests.get(os.getenv("MDM_SERVICE_URL")+'/mdm/jenis-identitas')
+    masterDataProvinsiReq = requests.get(os.getenv("MDM_SERVICE_URL")+'/mdm/provinsi')
+    modelAttribute["masterDataJenisIdentitas"] = json.loads(masterDataJenisIdentitasReq.text)["result"]
+    modelAttribute["masterDataProvinsi"] = json.loads(masterDataProvinsiReq.text)["result"]
+    return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO", modelAttribute=modelAttribute)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -47,11 +61,16 @@ def index():
     dataKriminalitas["doh"] = doh
     dataKriminalitas["hiltem"] = hiltem
     return render_template("layout.html", dataKriminal=dataKriminalitas, nav=nav, body="index.html", title="Data Kriminalitas")
-@app.route("/identify_faces", methods=['GET', 'POST'])
+@app.route("/identify_faces", methods=['GET'])
 def identify_faces():
+    modify_nav("Identifikasi Wajah")
+    return render_template("layout.html", nav=nav, body="identify_faces.html", title="Identifikasi Wajah")
+
+@app.route("/identify", methods=['POST'])
+def identify():
     if request.method == 'POST':
         if 'file' not in request.files:
-            return redirect(request.url)
+            return {"result":"file not found"} 
 
         file = request.files['file']
 
@@ -59,10 +78,12 @@ def identify_faces():
             return redirect(request.url)
 
         if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
             # The image file seems valid! Detect faces and return the result.
-            return {"result":repo.face_identify(repo, file)} 
-    modify_nav("Identifikasi Wajah")
-    return render_template("layout.html", nav=nav, body="identify_faces.html", title="Identifikasi Wajah")
+            return {"result":repo.face_identify(repo, path)} 
+    return {"messages":"Method Not Allowed"}
 
 def modify_nav(path):
     for i, item in enumerate(nav, start=0):
