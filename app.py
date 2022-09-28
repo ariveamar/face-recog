@@ -1,10 +1,14 @@
 from flask_cors import CORS
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect
 from repository.repository import Repository
 from connection import dpos, doh, hiltem
 from werkzeug.utils import secure_filename
+import requests
+import json
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv()
 UPLOAD_FOLDER = 'image'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
@@ -39,8 +43,13 @@ def updatePickle():
         return {"messages":"Gagal update Pickle"}
 @app.route("/input_dpo")
 def input_dpo():
+    modelAttribute = {}
     modify_nav("Input DPO")
-    return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO")
+    masterDataJenisIdentitasReq = requests.get(os.getenv("MDM_SERVICE_URL")+'/mdm/jenis-identitas')
+    masterDataProvinsiReq = requests.get(os.getenv("MDM_SERVICE_URL")+'/mdm/provinsi')
+    modelAttribute["masterDataJenisIdentitas"] = json.loads(masterDataJenisIdentitasReq.text)["result"]
+    modelAttribute["masterDataProvinsi"] = json.loads(masterDataProvinsiReq.text)["result"]
+    return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO", modelAttribute=modelAttribute)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

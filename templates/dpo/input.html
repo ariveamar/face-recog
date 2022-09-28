@@ -4,7 +4,37 @@
     <form id="formInput">
       <div class="mb-3">
         <label for="name" class="form-label">Nama</label>
-        <input type="text" class="form-control" id="name" />
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          placeholder="Nama Kecil, Title, Nama Samaran, dan Lainnya"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="jenisIdentitas" class="form-label">Jenis Identitas</label>
+        <select
+          name="jenisIdentitas"
+          id="jenisIdentitas"
+          class="form-select"
+          onchange="changeJenisIdentitas(this)"
+        >
+          <option value="" disabled selected>Pilih Jenis Identitas</option>
+          {% for jenisIdentitas in modelAttribute["masterDataJenisIdentitas"] %}
+          <option value="{{jenisIdentitas['id_jns_identitas']}}">
+            {{jenisIdentitas['nm_jns_identitas']}}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3" style="display: none" id="sectionNomorIdentitas">
+        <label for="noIdentitas" class="form-label">Nomor Identitas</label>
+        <input
+          type="text"
+          class="form-control"
+          id="noIdentitas"
+          name="noIdentitas"
+        />
       </div>
       <div class="mb-3">
         <label for="alamat" class="form-label">Alamat</label>
@@ -19,6 +49,7 @@
           accept="image/png, image/jpeg"
         />
       </div>
+
       <button type="button" class="btn btn-primary" onclick="modal()">
         Submit
       </button>
@@ -30,7 +61,7 @@
 <script>
   function modal() {
     $("#modalLoading").modal("toggle");
-    var url = "http://192.168.100.137:8880/dpo/dpos";
+    var url = "http://localhost:8880/dpo/dpos";
     var data = {
       name: $("#name").val(),
       alamat: $("#alamat").val(),
@@ -44,7 +75,7 @@
       crossDomain: true,
       contentType: "application/json; charset=utf-8",
       success: function (data) {
-        $.post("http://192.168.100.137:5001/updatePickle", function (data) {
+        $.post("http://localhost:5001/updatePickle", function (data) {
           $("#modalLoading").modal("toggle");
           Swal.fire({
             position: "center",
@@ -65,11 +96,11 @@
   $("#photo").on("change", function () {
     $("#modalLoading").modal("toggle");
     new Compressor(this.files[0], {
-      quality:0.4,
-      success(result){
+      quality: 0.4,
+      success(result) {
         getBase64(result);
-      }
-    })
+      },
+    });
     setTimeout(function () {
       $("#modalLoading").modal("toggle");
     }, 3000);
@@ -83,5 +114,13 @@
     reader.onerror = function (error) {
       console.log("Error: ", error);
     };
+  }
+  function changeJenisIdentitas(e) {
+    var list = ["", "0"];
+    if (list.indexOf(e.value) > -1) {
+      $("#sectionNomorIdentitas").hide();
+    } else {
+      $("#sectionNomorIdentitas").show();
+    }
   }
 </script>
