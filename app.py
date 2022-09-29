@@ -49,6 +49,7 @@ def input_dpo():
     masterDataProvinsiReq = requests.get(os.getenv("MDM_SERVICE_URL")+'/mdm/provinsi')
     modelAttribute["masterDataJenisIdentitas"] = json.loads(masterDataJenisIdentitasReq.text)["result"]
     modelAttribute["masterDataProvinsi"] = json.loads(masterDataProvinsiReq.text)["result"]
+    modelAttribute["backendURL"] = os.getenv("BACKEND_DPO_SERVICE_URL")
     return render_template("layout.html", nav=nav, body="dpo/input.html", title="Input DPO", modelAttribute=modelAttribute)
 def allowed_file(filename):
     return '.' in filename and \

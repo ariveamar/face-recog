@@ -59,9 +59,13 @@
 </body>
 {%include "loadjs.html"%}
 <script>
+  var backendURL = '{{modelAttribute["backendURL"]}}';
+  console.log(backendURL);
+  console.log(window.location.host);
+  console.log(location.protocol + '//' + location.host);
   function modal() {
     $("#modalLoading").modal("toggle");
-    var url = "http://localhost:8880/dpo/dpos";
+    var url = `${backendURL}/dpo/dpos`;
     var data = {
       name: $("#name").val(),
       alamat: $("#alamat").val(),
@@ -75,7 +79,7 @@
       crossDomain: true,
       contentType: "application/json; charset=utf-8",
       success: function (data) {
-        $.post("http://localhost:5001/updatePickle", function (data) {
+        $.post(`${location.protocol + '//' + location.host}/updatePickle`, function (data) {
           $("#modalLoading").modal("toggle");
           Swal.fire({
             position: "center",
